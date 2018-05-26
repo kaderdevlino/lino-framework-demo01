@@ -1,0 +1,88 @@
+from __future__ import unicode_literals
+from lino.api import dd,rt
+from django.db import models
+from django.core.exceptions import ValidationError
+from django.utils.encoding import python_2_unicode_compatible
+
+@dd.python_2_unicode_compatible
+class Client1(dd.Model):
+    first_name = models.CharField("First name", max_length=50,blank=True,null=True)
+    address = models.CharField("Address", max_length=50,blank=True,null=True)
+
+    def __str__(self):
+        return "%s, @:%s" % (self.first_name, self.address)
+
+class Product(dd.Model):
+    product_name = models.CharField("Product ", max_length=50,null=True , blank=True)
+    product_type = models.CharField("Product Type", max_length=50, null=True, blank=True)
+    #product_price= models.DecimalField("Price", decimal_places=2, max_digits=10)
+    #product_qt=models.IntegerField("Quantity")
+    product_qt = dd.QuantityField(default='1')
+
+    product_price = dd.PriceField()
+
+    def __str__(self):
+        return "%s ,%s EUR |*%s EUR*" % (self.product_name, self.product_price, self.product_qt * self.product_price)
+    
+
+class Delivery(dd.Model):
+    def __str__(self,t1):
+        self.t1=total_d
+    client1 = dd.ForeignKey(Client1)
+    product = dd.ForeignKey(Product)
+     
+    designation = models.CharField("Designation", max_length=200, null=True,blank=True)
+
+    #price = models.DecimalField("Price", decimal_places=2, max_digits=10)
+    #price = models.ForeignKey(Product, on_delete=models.SET_NULL,null=True)
+    price=dd.PriceField()
+    discount=dd.QuantityField()
+    date = models.DateField(null=True, blank=True)
+    hour =models.TimeField(null=True, blank=True)
+    qty=dd.QuantityField(default='1')
+
+    total_d=dd.PriceField(default=0)
+    
+
+
+
+    def __str__(self):
+        if self.discount is None:
+            self.total_d=self.total()
+            return "%s x %s  = %s EUR" % (self.qty, self.price, self.total_d)
+        else:
+            self.total_d=self.total() 
+            return "%s x %s  (-%s) = %s EUR" % (self.qty,  self.price, self.discount, self.total_d)
+
+
+    def total(self):
+        if self.discount is None:
+            return self.qty * self.price
+        else:
+            return self.qty * (1 - self.discount) * self.price
+    '''
+    @property
+    def total_de(self):
+        "Returns the person's full name."
+        return "%s x %s  (-%s) = %s EUR" % (self.qty,  self.price, self.discount, self.total())
+
+    
+    @dd.chooser()
+    def product_choices(cls, product_name):
+        return Product.objects.filter(product_name=product_name)
+
+    def create_product_choice(self, text):
+        """
+        Called when an unknown city name was given.
+        """
+        if self.product_name is None:
+            raise ValidationError(
+                "Cannot auto-create price %r if product_name is empty", text)
+        return Delivery.price.lookup_or_create(
+            'name', text, product_name=self.product_name)
+
+    def __str__(self):
+        return self.price
+
+
+'''

@@ -1,0 +1,56 @@
+
+</br>
+<center><h1>Warehouse Management-Client System</h1></center>
+
+<b>->Table of Products :-----------------------------------------------------------------------------------------------</b>
+
+</br>
+<br>
+ <table style="width:40%">
+  <tr>
+    <th><b>Product </b></th>
+    <th><b>Prod_Type</b></th>
+    <th><b>Prod_Price(EURO)</b></th>
+    <th><b>Prod_Rest</b></th>
+    <th><b>Total_Rest(EURO)</b></th>
+  </tr>
+ {% for p in rt.models.client.Product.objects.all() %}
+  <tr>
+    <td><p style="color:blue;">{{ p.product_name }}</p></td>
+    <td>{{ p.product_type }}</td>
+    <td><p style="color:red;">{{ p.product_price }}</p></td>
+    <td><p style="color:red;">{{ p.rest_qt }}</p></td>
+    <td><p style="color:red;">{{ p.product_price*p.rest_qt }}</p></td>
+  </tr>
+{% endfor%}
+
+ </table>
+<b>-------------------------------------------------------------------------------------------------------------------------------</b>
+<br>
+<b>->Example for Calculation on Database:<b>
+<br><br>
+<b>Total_Qt_Prod:</b> {{ rt.models.client.Product.objects.values('product_qt')|sum(attribute='product_qt') }}
+<br>
+
+{% for del in rt.models.client.Delivery.objects.all() %}
+</br>{%- if del.product.product_name=='apple' -%}
+
+ »Apple_Quantity:{{ del.qty }}|->Apple_Total_Price:{{ del.total_d }}
+</br>
+{%endif%}
+{% endfor %}
+</br>
+</br>
+<b>Total_Qt of Apple_Out(sale):</b> {{ rt.models.client.Delivery.objects.filter(designation='apple+')|sum(attribute='qty') }}
+<br>
+<b>Total_Price of Apple_Out(sale):</b> {{ rt.models.client.Delivery.objects.filter(designation='apple+')|sum(attribute='total_d')}} euro
+<br><br>
+
+
+<b>Total_Qt_Delivery:</b>{{rt.models.client.Delivery.objects.all()|sum(attribute='qty')}}
+<br>
+<b>Total_Price_Delivery:</b>{{rt.models.client.Delivery.objects.all()|sum(attribute='total_d')}} euro
+
+
+</br>
+

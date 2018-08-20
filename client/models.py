@@ -36,7 +36,7 @@ class Delivery(dd.Model):
     designation = models.CharField("Designation",default='give_same_Product_Name', max_length=40, null=True,blank=True)
     #price = models.DecimalField("Price", decimal_places=2, max_digits=10)
     price=dd.PriceField(default=0)
-    discount=dd.QuantityField()
+    discount=dd.QuantityField(null=True ,blank=True)
     #date = models.DateField(auto_now=True) for update auto_now_add for create
     date = models.DateField(auto_now_add=True)
     hour = models.TimeField(auto_now_add=True)
